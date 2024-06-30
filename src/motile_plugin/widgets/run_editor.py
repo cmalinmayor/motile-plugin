@@ -67,7 +67,7 @@ class RunEditor(QGroupBox):
         prev_selection = self.layer_selection_box.currentText()
         self.layer_selection_box.clear()
         for layer in self.viewer.layers:
-            if isinstance(layer, (napari.layers.Labels, napari.layers.Points)):
+            if isinstance(layer, napari.layers.Labels | napari.layers.Points):
                 self.layer_selection_box.addItem(layer.name)
         self.layer_selection_box.setCurrentText(prev_selection)
 
@@ -95,9 +95,7 @@ class RunEditor(QGroupBox):
         layer_layout.setContentsMargins(0, 0, 0, 0)
         label = QLabel("Input Layer:")
         layer_layout.addWidget(label)
-        label.setToolTip(
-            "Select the labels layer you want to use for tracking"
-        )
+        label.setToolTip("Select the labels layer you want to use for tracking")
 
         # # Layer selection combo box
         self.layer_selection_box = QComboBox()
@@ -106,9 +104,7 @@ class RunEditor(QGroupBox):
         layers_events.inserted.connect(self.update_labels_layers)
         layers_events.removed.connect(self.update_labels_layers)
         layers_events.reordered.connect(self.update_labels_layers)
-        self.layer_selection_box.currentTextChanged.connect(
-            self.update_layer_selection
-        )
+        self.layer_selection_box.currentTextChanged.connect(self.update_layer_selection)
 
         size_policy = self.layer_selection_box.sizePolicy()
         size_policy.setHorizontalPolicy(QSizePolicy.MinimumExpanding)
@@ -144,13 +140,9 @@ class RunEditor(QGroupBox):
         """
         ndim = segmentation.ndim
         if ndim > 4:
-            raise ValueError(
-                "Expected segmentation to be at most 4D, found %d", ndim
-            )
+            raise ValueError("Expected segmentation to be at most 4D, found %d", ndim)
         elif ndim < 3:
-            raise ValueError(
-                "Expected segmentation to be at least 3D, found %d", ndim
-            )
+            raise ValueError("Expected segmentation to be at least 3D, found %d", ndim)
         reshaped = np.expand_dims(segmentation, 1)
         return reshaped
 
